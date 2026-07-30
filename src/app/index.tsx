@@ -1,4 +1,5 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { EmptyState } from "@/components/EmptyState";
@@ -46,7 +47,10 @@ export default function DashboardScreen() {
   const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
   function handleOpenTask(taskId: string) {
-    console.log(`Abrir tarefa ${taskId} (navegação disponível na Etapa 3)`);
+    router.push({
+      pathname: "/tasks/[id]",
+      params: { id: taskId },
+    });
   }
 
   function handleToggleTask(taskId: string) {
@@ -76,6 +80,20 @@ export default function DashboardScreen() {
             />
 
             <Text style={styles.sectionTitle}>Suas tarefas</Text>
+            <View style={styles.actionsRow}>
+              <Pressable
+                onPress={() => router.push("/tasks/new")}
+                style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
+              >
+                <Text style={styles.primaryButtonText}>Cadastrar tarefa</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/settings")}
+                style={({ pressed }) => [styles.secondaryButton, pressed && styles.secondaryButtonPressed]}
+              >
+                <Text style={styles.secondaryButtonText}>Configurações</Text>
+              </Pressable>
+            </View>
           </View>
         }
         renderItem={({ item }) => (
@@ -86,7 +104,7 @@ export default function DashboardScreen() {
           />
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListEmptyComponent={<EmptyState />}
+        ListEmptyComponent={<EmptyState onCreatePress={() => router.push("/tasks/new")} />}
       />
     </SafeAreaView>
   );
@@ -122,6 +140,42 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
     color: COLORS.text,
+  },
+  actionsRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  primaryButton: {
+    flex: 1,
+    backgroundColor: COLORS.primary,
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  primaryButtonPressed: {
+    backgroundColor: COLORS.primaryDark,
+  },
+  primaryButtonText: {
+    color: COLORS.surface,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  secondaryButton: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  secondaryButtonPressed: {
+    opacity: 0.7,
+  },
+  secondaryButtonText: {
+    color: COLORS.text,
+    fontSize: 14,
+    fontWeight: "600",
   },
   separator: {
     height: 12,
